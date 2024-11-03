@@ -12,11 +12,11 @@
 	<input type="text" id="add-next-action" name="action-text" />
 	<button type="submit">Add</button>
 </form>
-{#if form?.success}
-	<p>Good job!</p>
-	{#if form?.newAction}
-		<p>Added {form.newAction.action}</p>
-	{/if}
-{/if}
+{#if form?.success}Added!{/if}
 
 <h2>Your Next Actions ({data.actions.length})</h2>
+<ul>
+	{#each data.actions as nextAction}
+		<li>{nextAction.action}</li>
+	{/each}
+</ul>
