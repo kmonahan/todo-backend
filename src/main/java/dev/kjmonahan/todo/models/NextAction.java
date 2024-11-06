@@ -14,6 +14,8 @@ public class NextAction {
     @NotBlank(message = "Next action cannot be blank.")
     private String action;
 
+    private boolean completed = false;
+
     public NextAction() {}
 
     public NextAction(String action) {
@@ -32,5 +34,17 @@ public class NextAction {
     @Override
     public String toString() {
         return this.getAction();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }

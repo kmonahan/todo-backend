@@ -24,5 +24,21 @@ export const actions = {
 			success: true,
 			newAction
 		};
+	},
+	updateAction: async ({ request, fetch }) => {
+		const data = await request.formData();
+		const id = data.get('id');
+		const response = await fetch(`/api/next-action/complete/${id}`, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+		if (response.status !== 200) {
+			return fail(response.status);
+		}
+		return {
+			success: true
+		};
 	}
 } satisfies Actions;

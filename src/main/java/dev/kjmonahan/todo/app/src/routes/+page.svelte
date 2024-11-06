@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ActionData, PageData } from './$types';
 	import { enhance } from '$app/forms';
+	import NextAction from './NextAction.svelte';
 
 	const { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
@@ -16,7 +17,7 @@
 
 <h2>Your Next Actions ({data.actions.length})</h2>
 <ul>
-	{#each data.actions as nextAction}
-		<li>{nextAction.action}</li>
+	{#each data.actions as nextAction (nextAction.id)}
+		<NextAction {...nextAction} />
 	{/each}
 </ul>
