@@ -24,7 +24,7 @@ public class NextActionController {
     @PostMapping
     public ResponseEntity<NextAction> createNextAction(@Valid @RequestBody NextAction newAction) {
         actions.save(newAction);
-        return new ResponseEntity<>(newAction, HttpStatus.CREATED);
+        return new ResponseEntity<>(newAction, null, HttpStatus.CREATED);
     }
 
     @PatchMapping(value = "/edit/{id}")
@@ -37,6 +37,16 @@ public class NextActionController {
             actions.save(nextAction);
             return new ResponseEntity<>(nextAction, HttpStatus.OK);
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<String> deleteNextAction(@PathVariable int id) {
+        try {
+            actions.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Missing action ID", null, HttpStatus.BAD_REQUEST);
+        }
     }
 }
