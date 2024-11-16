@@ -18,8 +18,11 @@ public class NextActionController {
 
     @GetMapping
     public Iterable<NextAction> getActions() {
-        return actions.findAll();
+        return actions.findByCompleted(false);
     }
+
+    @GetMapping(value = "/completed")
+    public Iterable<NextAction> getCompletedActions() { return actions.findByCompleted(true); }
 
     @PostMapping
     public ResponseEntity<NextAction> createNextAction(@Valid @RequestBody NextAction newAction) {
