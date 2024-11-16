@@ -27,12 +27,13 @@ public class NextActionController {
         return new ResponseEntity<>(newAction, HttpStatus.CREATED);
     }
 
-    @PatchMapping(value = "/complete/{id}")
-    public ResponseEntity<NextAction> completeNextAction(@PathVariable int id) {
+    @PatchMapping(value = "/edit/{id}")
+    public ResponseEntity<NextAction> completeNextAction(@PathVariable int id, @Valid @RequestBody NextAction updatedAction) {
         Optional<NextAction> theAction = actions.findById(id);
         if (theAction.isPresent()) {
             NextAction nextAction = theAction.get();
-            nextAction.setCompleted(true);
+            nextAction.setAction(updatedAction.getAction());
+            nextAction.setCompleted(updatedAction.isCompleted());
             actions.save(nextAction);
             return new ResponseEntity<>(nextAction, HttpStatus.OK);
         }
