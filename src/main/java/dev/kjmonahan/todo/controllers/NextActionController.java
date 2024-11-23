@@ -3,6 +3,7 @@ package dev.kjmonahan.todo.controllers;
 import dev.kjmonahan.todo.models.NextAction;
 import dev.kjmonahan.todo.repositories.NextActionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,13 @@ public class NextActionController {
 
     @GetMapping
     public Iterable<NextAction> getActions() {
-        return actions.findByCompleted(false);
+        return actions.findByCompleted(false, Sort.by(Sort.Direction.ASC, "priorityOrder"));
     }
 
     @GetMapping(value = "/completed")
-    public Iterable<NextAction> getCompletedActions() { return actions.findByCompleted(true); }
+    public Iterable<NextAction> getCompletedActions() {
+        return actions.findByCompleted(true, Sort.by(Sort.Direction.DESC, "dateCompleted"));
+    }
 
     @PostMapping
     public ResponseEntity<NextAction> createNextAction(@Valid @RequestBody NextAction newAction) {
@@ -36,7 +39,8 @@ public class NextActionController {
         if (theAction.isPresent()) {
             NextAction nextAction = theAction.get();
             nextAction.setAction(updatedAction.getAction());
-            nextAction.setCompleted(updatedAction.isCompleted());
+            nextAction.toggleActionCompletion(updatedAction.isCompleted());
+            nextAction.setPriorityOrder(updatedAction.getPriorityOrder());
             actions.save(nextAction);
             return new ResponseEntity<>(nextAction, HttpStatus.OK);
         }
