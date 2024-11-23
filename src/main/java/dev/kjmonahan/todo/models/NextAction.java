@@ -3,6 +3,7 @@ package dev.kjmonahan.todo.models;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Date;
@@ -18,6 +19,8 @@ public class NextAction {
     private boolean completed = false;
     private int priorityOrder;
     private Date dateCompleted;
+    @ManyToOne
+    private Project project;
 
     public NextAction() {}
 
@@ -78,5 +81,13 @@ public class NextAction {
 
     public void setDateCompleted(Date dateCompleted) {
         this.dateCompleted = dateCompleted;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }
