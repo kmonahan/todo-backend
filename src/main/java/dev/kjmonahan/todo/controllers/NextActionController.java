@@ -1,7 +1,11 @@
 package dev.kjmonahan.todo.controllers;
 
+import dev.kjmonahan.todo.dto.ProjectActionDTO;
 import dev.kjmonahan.todo.models.NextAction;
+import dev.kjmonahan.todo.models.Project;
 import dev.kjmonahan.todo.repositories.NextActionRepository;
+import dev.kjmonahan.todo.repositories.ProjectRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -16,6 +20,15 @@ import java.util.Optional;
 public class NextActionController {
     @Autowired
     private NextActionRepository actions;
+    @Autowired
+    private ProjectRepository projects;
+    private final ModelMapper modelMapper = new ModelMapper();
+
+    public NextActionController() {
+//        modelMapper
+//                .typeMap(NextAction.class, ProjectActionDTO.class)
+//                .addMapping(src -> src.getProject().getId(), ProjectActionDTO::setProjectId);
+    }
 
     @GetMapping
     public Iterable<NextAction> getActions() {
@@ -28,9 +41,12 @@ public class NextActionController {
     }
 
     @PostMapping
-    public ResponseEntity<NextAction> createNextAction(@Valid @RequestBody NextAction newAction) {
-        actions.save(newAction);
-        return new ResponseEntity<>(newAction, null, HttpStatus.CREATED);
+    public ResponseEntity<ProjectActionDTO> createNextAction(@Valid @RequestBody ProjectActionDTO newAction) {
+        NextAction fullNewAction = modelMapper.map(newAction, NextAction.class);
+        Optional<Project> relatedProject = projects.findById(newAction.getProjectId());
+        relatedProject.ifPresent(fullNewAction::setProject);
+        actions.save(fullNewAction);
+        return new ResponseEntity<>(modelMapper.map(fullNewAction, ProjectActionDTO.class), null, HttpStatus.CREATED);
     }
 
     @PatchMapping(value = "/edit/{id}")
@@ -41,6 +57,7 @@ public class NextActionController {
             nextAction.setAction(updatedAction.getAction());
             nextAction.toggleActionCompletion(updatedAction.isCompleted());
             nextAction.setPriorityOrder(updatedAction.getPriorityOrder());
+            nextAction.setProject(updatedAction.getProject());
             actions.save(nextAction);
             return new ResponseEntity<>(nextAction, HttpStatus.OK);
         }

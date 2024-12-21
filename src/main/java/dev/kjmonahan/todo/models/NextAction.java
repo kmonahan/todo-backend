@@ -1,9 +1,6 @@
 package dev.kjmonahan.todo.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Date;
@@ -19,7 +16,7 @@ public class NextAction {
     private boolean completed = false;
     private int priorityOrder;
     private Date dateCompleted;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Project project;
 
     public NextAction() {}
@@ -28,6 +25,11 @@ public class NextAction {
         this();
         this.action = action;
         this.priorityOrder = priorityOrder;
+    }
+
+    public NextAction(String action, int priorityOrder, Project project) {
+        this(action, priorityOrder);
+        this.project = project;
     }
 
     public void toggleActionCompletion(boolean completed) {

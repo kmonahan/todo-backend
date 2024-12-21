@@ -1,9 +1,6 @@
 package dev.kjmonahan.todo.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.ArrayList;
@@ -19,7 +16,7 @@ public class Project {
     private String title;
     private String endGoal;
     private String notes;
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
     private final List<NextAction> actions = new ArrayList<>();
     private boolean completed = false;
 
@@ -76,5 +73,9 @@ public class Project {
 
     public int getId() {
         return id;
+    }
+
+    public List<NextAction> getActions() {
+        return actions;
     }
 }
