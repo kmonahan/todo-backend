@@ -1,6 +1,7 @@
 package dev.kjmonahan.todo.dto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProjectDetailDTO {
     private int id;
@@ -36,7 +37,8 @@ public class ProjectDetailDTO {
     }
 
     public List<ProjectActionDTO> getActions() {
-        return actions;
+       actions.removeIf(ProjectActionDTO::isCompleted);
+       return actions;
     }
 
     public String getEndGoal() {
