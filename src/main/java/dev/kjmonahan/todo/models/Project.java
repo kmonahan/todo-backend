@@ -1,7 +1,7 @@
 package dev.kjmonahan.todo.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +12,15 @@ public class Project {
     @GeneratedValue
     private int id;
 
-    @NotBlank(message = "Project title cannot be blank")
+    @NotEmpty(message = "Project title cannot be blank")
     private String title;
     private String endGoal;
     private String notes;
     @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
     private final List<NextAction> actions = new ArrayList<>();
     private boolean completed = false;
+    @ManyToOne
+    private Context context;
 
     public Project() {}
 
@@ -77,5 +79,13 @@ public class Project {
 
     public List<NextAction> getActions() {
         return actions;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 }

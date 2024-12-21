@@ -1,7 +1,7 @@
 package dev.kjmonahan.todo.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ public class NextAction {
     @GeneratedValue
     private int id;
 
-    @NotBlank(message = "Next action cannot be blank.")
+    @NotEmpty(message = "Next action cannot be blank.")
     private String action;
     private boolean completed = false;
     private int priorityOrder;
