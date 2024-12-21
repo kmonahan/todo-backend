@@ -5,13 +5,13 @@ import dev.kjmonahan.todo.models.NextAction;
 import dev.kjmonahan.todo.models.Project;
 import dev.kjmonahan.todo.repositories.NextActionRepository;
 import dev.kjmonahan.todo.repositories.ProjectRepository;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 import java.util.Optional;
 
@@ -25,14 +25,16 @@ public class NextActionController {
     private final ModelMapper modelMapper = new ModelMapper();
 
     public NextActionController() {
-//        modelMapper
-//                .typeMap(NextAction.class, ProjectActionDTO.class)
-//                .addMapping(src -> src.getProject().getId(), ProjectActionDTO::setProjectId);
+        modelMapper
+                .typeMap(NextAction.class, ProjectActionDTO.class)
+                .addMapping(src -> src.getProject().getId(), ProjectActionDTO::setProjectId);
     }
 
     @GetMapping
-    public Iterable<NextAction> getActions() {
-        return actions.findByCompleted(false, Sort.by(Sort.Direction.ASC, "priorityOrder"));
+    public Iterable<ProjectActionDTO> getActions() {
+        return actions.findByCompleted(false, Sort.by(Sort.Direction.ASC, "priorityOrder")).stream()
+                .map(action -> modelMapper.map(action, ProjectActionDTO.class))
+                .toList();
     }
 
     @GetMapping(value = "/completed")
@@ -50,16 +52,18 @@ public class NextActionController {
     }
 
     @PatchMapping(value = "/edit/{id}")
-    public ResponseEntity<NextAction> completeNextAction(@PathVariable int id, @Valid @RequestBody NextAction updatedAction) {
+    public ResponseEntity<ProjectActionDTO> completeNextAction(@PathVariable int id, @Valid @RequestBody ProjectActionDTO updatedAction) {
         Optional<NextAction> theAction = actions.findById(id);
         if (theAction.isPresent()) {
             NextAction nextAction = theAction.get();
             nextAction.setAction(updatedAction.getAction());
             nextAction.toggleActionCompletion(updatedAction.isCompleted());
             nextAction.setPriorityOrder(updatedAction.getPriorityOrder());
-            nextAction.setProject(updatedAction.getProject());
+            if (updatedAction.getProjectId() != 0 && projects.findById(updatedAction.getProjectId()).isPresent()) {
+                nextAction.setProject(projects.findById(updatedAction.getProjectId()).get());
+            }
             actions.save(nextAction);
-            return new ResponseEntity<>(nextAction, HttpStatus.OK);
+            return new ResponseEntity<>(modelMapper.map(nextAction, ProjectActionDTO.class), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
